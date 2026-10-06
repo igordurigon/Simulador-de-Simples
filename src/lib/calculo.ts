@@ -364,3 +364,48 @@ export function entradaExemplo(): Entrada {
     ],
   }
 }
+
+export interface CelulaMatriz {
+  lado: Lado
+  /** Lucro por fora − lucro por dentro. */
+  dif: number
+  /** Diferença em fração do faturamento. */
+  difPct: number
+  lucroDentro: number
+  lucroFora: number
+}
+
+/** Abaixo disso (em fração do faturamento) a diferença não decide nada. */
+export const EMPATE_MATRIZ = 0.0025
+
+/**
+ * Por dentro × por fora para cada faturamento e anexo, sem a lista de compras:
+ * as compras com crédito entram como uma única compra de fornecedor regular,
+ * em % do faturamento. Ano, alíquotas e estratégias de preço vêm da simulação.
+ */
+export function calcularMatriz(e: Entrada, pctB2B: number, pctComprasCredito: number, faturamentos: number[], anexos: Anexo[]) {
+  return faturamentos.map((faturamento) => anexos.map((anexo): CelulaMatriz => {
+    const compras: Compra[] = pctComprasCredito > 0
+      ? [{ id: 'm', fornecedor: '', descricao: '', tipo: 'regular', geraCredito: true, valor: faturamento * pctComprasCredito, aliquotaNota: null }]
+      : []
+    const r = calcular({
+      ...e, anexo, faturamento, pctB2B, compras,
+      rbt12Manual: false, comprasAcompanham: false, despesas: 0,
+    })
+    const difPct = faturamento > 0 ? r.comp.difLucro / faturamento : 0
+    return {
+      lado: Math.abs(difPct) < EMPATE_MATRIZ ? 'empate' : difPct > 0 ? 'fora' : 'dentro',
+      dif: r.comp.difLucro,
+      difPct,
+      lucroDentro: r.c1.lucro,
+      lucroFora: r.c2.lucro,
+    }
+  }))
+}
+
+/** Compras de fornecedor regular, em % do faturamento, que gerariam o mesmo crédito da simulação. */
+export function comprasCreditoEquivalente(e: Entrada, r: Resultado): number {
+  const t = r.aliquotas.total
+  if (e.faturamento <= 0 || t <= 0) return 0
+  return r.totalCreditos / (t / (1 + t)) / e.faturamento
+}

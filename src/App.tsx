@@ -14,6 +14,7 @@ import { Veredito } from './components/Veredito'
 import { Guias } from './components/Guias'
 import { Comparativo } from './components/Comparativo'
 import { GraficoTransicao } from './components/Grafico'
+import { Matriz } from './components/Matriz'
 
 const ABAS = ['Empresa', 'Vendas', 'Compras', 'Premissas'] as const
 type Aba = (typeof ABAS)[number]
@@ -143,6 +144,8 @@ export default function App({ usuario, onTrocarSenha, onAdministrar, onSair }: {
           </div>
           <Veredito entrada={entrada} r={r} />
         </div>
+
+        <Matriz entrada={entrada} r={r} />
 
         <Guias r={r} />
 

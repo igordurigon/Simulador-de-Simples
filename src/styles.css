@@ -576,3 +576,58 @@ tr.atual > * { background: var(--calculado); }
 }
 .campo-texto .campo-linha { min-height: 23px; }
 .botao.pequeno.ghost { display: inline-flex; align-items: center; gap: 6px; }
+
+/* ---------- Matriz faturamento × anexo ---------- */
+.matriz {
+  background: var(--superficie); border: 1px solid var(--fio); border-radius: var(--r-painel); padding: var(--pad-painel); min-width: 0;
+}
+.matriz-cab { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); gap: 16px 32px; align-items: end; margin-bottom: 20px; }
+.matriz-controles { display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-end; }
+.matriz-controles .estrategia { flex: 3 1 360px; }
+.matriz-controles > div { flex: 1 1 220px; }
+.matriz-controles .nota-caixa { display: block; margin-top: 6px; }
+.segmentado.tres { grid-template-columns: repeat(3, 1fr); }
+.link-acao {
+  margin-top: 6px; padding: 0; border: 0; background: none; cursor: pointer;
+  font: 500 13px var(--f-rotulo); color: var(--tinta); text-decoration: underline; text-underline-offset: 2px;
+}
+.matriz .rolagem { border: 0; border-radius: 0; background: transparent; }
+.tabela-matriz { border-collapse: separate; border-spacing: 3px; min-width: 640px; }
+.tabela-matriz th, .tabela-matriz td { padding: 8px 12px; }
+.tabela-matriz thead th { vertical-align: bottom; text-align: center; padding-bottom: 10px; }
+.tabela-matriz thead th:first-child, .tabela-matriz tbody th { text-align: left; padding-left: 4px; }
+.tabela-matriz thead th.sel .mt-anexo { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 4px; }
+.mt-anexo, .mt-fat { display: block; font-weight: 600; white-space: nowrap; }
+.mt-sub { display: block; font: 500 12px/1.2 var(--f-rotulo); color: var(--tinta-3); white-space: nowrap; }
+.tabela-matriz tr.sua th .mt-sub { color: var(--tinta); font-weight: 600; }
+
+.mc { text-align: center; border-radius: 8px; background: var(--calculado); color: var(--tinta); white-space: nowrap; }
+.mc-lado { font-weight: 600; }
+.mc-dif { margin-left: 6px; color: var(--tinta-2); }
+.mc.dentro.n1 { background: color-mix(in srgb, var(--dentro) 12%, #fff); }
+.mc.dentro.n2 { background: color-mix(in srgb, var(--dentro) 26%, #fff); }
+.mc.dentro.n3 { background: color-mix(in srgb, var(--dentro) 44%, #fff); }
+.mc.fora.n1 { background: color-mix(in srgb, var(--fora) 12%, #fff); }
+.mc.fora.n2 { background: color-mix(in srgb, var(--fora) 26%, #fff); }
+.mc.fora.n3 { background: color-mix(in srgb, var(--fora) 44%, #fff); }
+.mc.n3 .mc-dif { color: var(--tinta); }
+.mc.empate .mc-lado { font-weight: 500; color: var(--tinta-2); }
+.mc.marcada { box-shadow: inset 0 0 0 2px var(--tinta); }
+
+.matriz-legenda { display: flex; flex-wrap: wrap; gap: 8px 20px; margin-top: 12px; font-size: 14px; color: var(--tinta-2); }
+.matriz-legenda span { display: inline-flex; align-items: center; gap: 8px; }
+.matriz-legenda .amostra { width: 14px; height: 14px; border-radius: 4px; }
+.matriz-legenda .amostra.dentro { background: color-mix(in srgb, var(--dentro) 44%, #fff); }
+.matriz-legenda .amostra.fora { background: color-mix(in srgb, var(--fora) 44%, #fff); }
+.matriz-legenda .amostra.empate { background: var(--calculado); border: 1px solid var(--fio); }
+
+@media (max-width: 1099px) {
+  .matriz-cab { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 640px) {
+  .segmentado.tres { grid-template-columns: 1fr; border-radius: 16px; }
+}
+@media print {
+  .matriz { padding: 0; border: 0; break-inside: avoid; }
+  .matriz-controles { display: none; }
+}
