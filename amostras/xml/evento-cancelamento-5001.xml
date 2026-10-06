@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<procEventoNFe xmlns="http://www.portalfiscal.inf.br/nfe" versao="1.00">
+  <evento versao="1.00"><infEvento Id="ID1101114226073344455500019955001000005001110035007501"><cOrgao>42</cOrgao><tpAmb>1</tpAmb><CNPJ>33444555000199</CNPJ><chNFe>42260733444555000199550010000050011100350075</chNFe><dhEvento>2026-07-15T09:00:00-03:00</dhEvento><tpEvento>110111</tpEvento><nSeqEvento>1</nSeqEvento><verEvento>1.00</verEvento><detEvento versao="1.00"><descEvento>Cancelamento</descEvento><nProt>342000000000001</nProt><xJust>Cancelamento por erro de digitacao</xJust></detEvento></infEvento></evento>
+  <retEvento versao="1.00"><infEvento><tpAmb>1</tpAmb><cStat>135</cStat><xMotivo>Evento registrado e vinculado a NF-e</xMotivo><chNFe>42260733444555000199550010000050011100350075</chNFe><tpEvento>110111</tpEvento></infEvento></retEvento>
+</procEventoNFe>

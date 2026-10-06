@@ -1,0 +1,9 @@
+﻿Fornecedor;Descrição;Tipo de fornecedor;Gera crédito;Valor pago no ano;% na nota
+Distribuidora Alfa Ltda;Mercadoria para revenda;Regular;Sim;420000,00;
+Industria Beta S.A.;Mercadoria para revenda;Contribuinte do regime regular;Sim;180000,00;
+Comercial Gama ME;Mercadoria para revenda;Simples por dentro;Sim;150000,00;1,3%
+Concessionaria de energia;Energia eletrica;Regular;Sim;36000,00;
+Transportadora Delta;Frete;Simples por fora;Sim;30000,00;
+Locador pessoa fisica;Aluguel do imovel;Nao contribuinte;Nao;48000,00;
+Fornecedor sem valor;Linha que deve ser ignorada;Regular;Sim;;
+Fornecedor tipo estranho;Tipo nao reconhecido;Cooperativa;Sim;2500,00;
