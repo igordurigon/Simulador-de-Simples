@@ -596,7 +596,8 @@ tr.atual > * { background: var(--calculado); }
 .tabela-matriz th, .tabela-matriz td { padding: 8px 12px; }
 .tabela-matriz thead th { vertical-align: bottom; text-align: center; padding-bottom: 10px; }
 .tabela-matriz thead th:first-child, .tabela-matriz tbody th { text-align: left; padding-left: 4px; }
-.tabela-matriz thead th.sel .mt-anexo { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 4px; }
+.tabela-matriz thead th.sel { box-shadow: inset 0 -2px 0 var(--tinta); }
+.tabela-matriz thead th.sel .mt-sub { color: var(--tinta); }
 .mt-anexo, .mt-fat { display: block; font-weight: 600; white-space: nowrap; }
 .mt-sub { display: block; font: 500 12px/1.2 var(--f-rotulo); color: var(--tinta-3); white-space: nowrap; }
 .tabela-matriz tr.sua th .mt-sub { color: var(--tinta); font-weight: 600; }
