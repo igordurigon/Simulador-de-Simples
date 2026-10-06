@@ -4,5 +4,9 @@ import { defineConfig } from 'vitest/config'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
-  test: { environment: 'happy-dom', include: ['src/**/*.test.ts'] },
+  server: {
+    // Em dev o servidor (npm run dev:server) escuta na 3000.
+    proxy: { '/api': 'http://localhost:3000', '/saude': 'http://localhost:3000' },
+  },
+  test: { environment: 'happy-dom', include: ['src/**/*.test.ts', 'server/src/**/*.test.ts'] },
 })

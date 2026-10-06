@@ -2,6 +2,8 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { calcular, calcularTransicao } from './lib/calculo'
 import { ANEXOS, ANOS, type Ano } from './lib/tabelas'
 import { useSimulacao, validarEntrada } from './estado'
+import type { Usuario } from './api'
+import { MenuUsuario } from './components/MenuUsuario'
 import { brl } from './format'
 import { CampoSelect } from './components/Campos'
 import { AbaEmpresa } from './components/AbaEmpresa'
@@ -16,8 +18,13 @@ import { GraficoTransicao } from './components/Grafico'
 const ABAS = ['Empresa', 'Vendas', 'Compras', 'Premissas'] as const
 type Aba = (typeof ABAS)[number]
 
-export default function App() {
-  const { entrada, setEntrada, atualizar, restaurar } = useSimulacao()
+export default function App({ usuario, onTrocarSenha, onAdministrar, onSair }: {
+  usuario: Usuario
+  onTrocarSenha: () => void
+  onAdministrar: () => void
+  onSair: () => void
+}) {
+  const { entrada, setEntrada, atualizar, restaurar } = useSimulacao(usuario.id)
   const [aba, setAba] = useState<Aba>('Empresa')
   const [msg, setMsg] = useState<{ tipo: 'ok' | 'erro'; texto: string } | null>(null)
   const arquivo = useRef<HTMLInputElement>(null)
@@ -101,6 +108,7 @@ export default function App() {
               setMsg({ tipo: 'ok', texto: 'Exemplo restaurado.' })
             }
           }}>Restaurar exemplo</button>
+          <MenuUsuario usuario={usuario} onTrocarSenha={onTrocarSenha} onAdministrar={onAdministrar} onSair={onSair} />
         </div>
       </header>
 

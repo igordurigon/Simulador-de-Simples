@@ -5,13 +5,18 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "dev:server": "tsx watch server/src/index.ts",
+    "build": "tsc -b && vite build && tsc -p server/tsconfig.json",
+    "start": "node server/dist/index.js",
     "lint": "oxlint",
     "preview": "vite preview"
   },
   "dependencies": {
+    "@fastify/cookie": "^11.1.2",
+    "@fastify/static": "^10.1.5",
     "@fontsource/barlow": "^5.3.0",
     "@fontsource/barlow-semi-condensed": "^5.3.0",
+    "fastify": "^5.12.5",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
     "read-excel-file": "^9.3.10",
@@ -24,8 +29,12 @@
     "@vitejs/plugin-react": "^6.1.1",
     "happy-dom": "^20.14.5",
     "oxlint": "^1.81.0",
+    "tsx": "^4.23.15",
     "typescript": "~6.0.2",
     "vite": "^8.3.0",
     "vitest": "^5.0.3"
+  },
+  "engines": {
+    "node": ">=24"
   }
 }

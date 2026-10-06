@@ -2,7 +2,8 @@ import { useCallback, useEffect, useState } from 'react'
 import { ANOS, FRACAO_IBS_PADRAO, TABELAS, type Ano } from './lib/tabelas'
 import { entradaExemplo, novoId, type Compra, type Entrada, type OrigemCompra } from './lib/calculo'
 
-const CHAVE = 'simulador-ibs-cbs:v1'
+const CHAVE_ANTIGA = 'simulador-ibs-cbs:v1'
+const chaveDe = (usuarioId: number) => `${CHAVE_ANTIGA}:${usuarioId}`
 const TIPOS = ['regular', 'simples_fora', 'simples_dentro', 'nao_contribuinte']
 
 const num = (v: unknown, padrao: number) => (typeof v === 'number' && Number.isFinite(v) ? v : padrao)
@@ -68,9 +69,19 @@ export function validarEntrada(obj: unknown): { entrada: Entrada } | { erro: str
   return { entrada }
 }
 
-function carregar(): Entrada {
+/** Lê a simulação do usuário. Se existir a chave antiga (sem id), ela é migrada uma única vez para o primeiro usuário que entrar neste navegador. */
+function carregar(usuarioId: number): Entrada {
   try {
-    const bruto = localStorage.getItem(CHAVE)
+    const chave = chaveDe(usuarioId)
+    let bruto = localStorage.getItem(chave)
+    if (bruto === null) {
+      const antigo = localStorage.getItem(CHAVE_ANTIGA)
+      if (antigo !== null) {
+        localStorage.setItem(chave, antigo)
+        localStorage.removeItem(CHAVE_ANTIGA)
+        bruto = antigo
+      }
+    }
     if (bruto) {
       const r = validarEntrada(JSON.parse(bruto))
       if ('entrada' in r) return r.entrada
@@ -79,12 +90,12 @@ function carregar(): Entrada {
   return entradaExemplo()
 }
 
-export function useSimulacao() {
-  const [entrada, setEntrada] = useState<Entrada>(carregar)
+export function useSimulacao(usuarioId: number) {
+  const [entrada, setEntrada] = useState<Entrada>(() => carregar(usuarioId))
 
   useEffect(() => {
-    try { localStorage.setItem(CHAVE, JSON.stringify(entrada)) } catch { /* sem armazenamento */ }
-  }, [entrada])
+    try { localStorage.setItem(chaveDe(usuarioId), JSON.stringify(entrada)) } catch { /* sem armazenamento */ }
+  }, [entrada, usuarioId])
 
   const atualizar = useCallback((parcial: Partial<Entrada>) => setEntrada((e) => ({ ...e, ...parcial })), [])
   const restaurar = useCallback(() => setEntrada(entradaExemplo()), [])

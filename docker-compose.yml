@@ -1,15 +1,30 @@
 # Stack própria no Portainer (Repository → este repo, compose path docker-compose.yml).
 # O Portainer clona o repo e faz o build aqui mesmo; no redeploy use pullImage = false.
-# Env da stack: PROXY_NETWORK=<ID da overlay proxy-net> (o ID, não o nome).
-# Só a overlay: o NPM alcança por simulador-simples:80, sem porta publicada e sem bridge nova.
+# Env da stack: PROXY_NETWORK=<ID da overlay proxy-net> (o ID, não o nome),
+#               ADMIN_EMAIL, ADMIN_SENHA e (opcional) ADMIN_NOME — usados só para criar o
+#               primeiro administrador quando o banco está vazio.
+# Só a overlay: o NPM alcança por simulador-simples:3000, sem porta publicada e sem bridge nova.
+# ATENÇÃO: a porta interna mudou de 80 para 3000 (agora é um servidor Node, não mais o nginx).
+# O proxy host do NPM precisa apontar para simulador-simples:3000.
+# Os usuários e sessões ficam no volume nomeado "dados" (/data); não apague o volume.
 services:
   simulador:
     build: .
     image: simulador-simples:local
     container_name: simulador-simples
     restart: unless-stopped
+    environment:
+      - ADMIN_EMAIL=${ADMIN_EMAIL}
+      - ADMIN_NOME=${ADMIN_NOME:-Administrador}
+      - ADMIN_SENHA=${ADMIN_SENHA}
+      - TZ=America/Sao_Paulo
+    volumes:
+      - dados:/data
     networks:
       - proxy
+
+volumes:
+  dados:
 
 networks:
   proxy:
