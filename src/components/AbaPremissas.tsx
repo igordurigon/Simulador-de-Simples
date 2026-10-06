@@ -62,8 +62,9 @@ export function AbaPremissas({ entrada, atualizar }: Props) {
         <h3 id="t-premissas">Premissas e simplificações</h3>
         <ul>
           <li>O teto de 5% do ISS na 5ª faixa não é tratado.</li>
-          <li>A alíquota efetiva usa o RBT12 informado nos dois cenários.</li>
-          <li>Saldo credor de IBS/CBS aparece como valor negativo, sem ressarcimento nem compensação.</li>
+          <li>A alíquota efetiva usa o mesmo RBT12 nos dois cenários: o faturamento anual, ou o valor digitado na aba Empresa.</li>
+          <li>O crédito das compras só abate até o débito de cada tributo no ano. O que sobra é saldo credor: aparece à parte e não entra no lucro, porque depende de compensação futura ou ressarcimento.</li>
+          <li>Com &quot;Compras acompanham o faturamento&quot; ligado, compras e créditos sobem ou descem na mesma proporção do faturamento.</li>
           <li>Alíquotas reduzidas por setor entram pelo campo &quot;% na nota&quot; de cada compra.</li>
           <li>Valide os resultados com a contabilidade antes de decidir.</li>
         </ul>

@@ -86,6 +86,7 @@ export function CampoMoeda(p: {
   semRotulo?: boolean
   className?: string
   ajuda?: string
+  disabled?: boolean
 }) {
   return (
     <CampoNumero
@@ -170,6 +171,24 @@ export function CampoSelect<T extends string | number>({ rotulo, valor, onChange
         {opcoes.map((o) => <option key={String(o.valor)} value={String(o.valor)}>{o.nome}</option>)}
       </select>
     </label>
+  )
+}
+
+/** Liga/desliga com texto ao lado. */
+export function Interruptor({ rotulo, ligado, onChange, ajuda }: {
+  rotulo: string
+  ligado: boolean
+  onChange: (v: boolean) => void
+  ajuda?: ReactNode
+}) {
+  return (
+    <div className="interruptor">
+      <label>
+        <input type="checkbox" className="toggle" role="switch" checked={ligado} onChange={(e) => onChange(e.target.checked)} />
+        <span>{rotulo}</span>
+      </label>
+      {ajuda && <p className="apoio">{ajuda}</p>}
+    </div>
   )
 }
 

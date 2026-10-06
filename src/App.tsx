@@ -72,7 +72,7 @@ export default function App({ usuario, onTrocarSenha, onAdministrar, onSair }: {
         {aba === 'Empresa' && <AbaEmpresa entrada={entrada} r={r} atualizar={atualizar} />}
       </div>
       <div role="tabpanel" id="painel-Vendas" aria-labelledby="aba-Vendas" hidden={aba !== 'Vendas'}>
-        {aba === 'Vendas' && <AbaVendas entrada={entrada} atualizar={atualizar} />}
+        {aba === 'Vendas' && <AbaVendas entrada={entrada} r={r} atualizar={atualizar} />}
       </div>
       <div role="tabpanel" id="painel-Compras" aria-labelledby="aba-Compras" hidden={aba !== 'Compras'}>
         {aba === 'Compras' && <AbaCompras entrada={entrada} r={r} setEntrada={setEntrada} />}
@@ -116,7 +116,7 @@ export default function App({ usuario, onTrocarSenha, onAdministrar, onSair }: {
 
       <section className="so-impressao relatorio-id">
         <h1>Simulador IBS/CBS no Simples: {entrada.empresa || 'empresa sem nome'}</h1>
-        <p>CNPJ {entrada.cnpj || 'não informado'}. Ano de referência {entrada.ano}. {anexoNome}. RBT12 de {brl(entrada.rbt12)}.</p>
+        <p>CNPJ {entrada.cnpj || 'não informado'}. Ano de referência {entrada.ano}. {anexoNome}. RBT12 de {brl(r.rbt12)}.</p>
       </section>
 
       <main>

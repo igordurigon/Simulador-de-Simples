@@ -245,6 +245,10 @@ tr.atual > * { background: var(--calculado); }
 .toggle:checked { background: var(--tinta); }
 .toggle:checked::after { transform: translateX(18px); }
 
+.interruptor { margin-top: 16px; }
+.interruptor label { display: inline-flex; align-items: center; gap: 10px; cursor: pointer; font-weight: 500; }
+.interruptor .apoio { margin-top: 6px; }
+
 .colar { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
 .colar textarea {
   font: 15px/1.4 var(--f-texto); width: 100%; padding: 12px; background: var(--campo); border: 1px solid var(--campo-borda);

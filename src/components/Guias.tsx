@@ -64,8 +64,6 @@ function Guia({ lado, titulo, linhas, extra }: { lado: 'dentro' | 'fora'; titulo
 export function Guias({ r }: { r: Resultado }) {
   const { c1, c2 } = r
   const [aberto, setAberto] = useState(false)
-  const credorIbs = c2.ibsRecolher < 0
-  const credorCbs = c2.cbsRecolher < 0
 
   const l1: Linha[] = [
     { t: 'seg', nome: 'Receita', s: c1.receita },
@@ -87,10 +85,13 @@ export function Guias({ r }: { r: Resultado }) {
     { t: 'seg', nome: 'IBS débito', s: c2.ibsDebito },
     { t: 'seg', nome: 'CBS débito', s: c2.cbsDebito },
     { t: 'seg', nome: 'Preço cobrado do cliente', s: c2.preco },
-    { t: 'total', nome: 'Crédito de IBS (compras)', v: brl(c2.creditoIbs) },
-    { t: 'total', nome: 'Crédito de CBS (compras)', v: brl(c2.creditoCbs) },
-    { t: 'total', nome: 'IBS a recolher', v: brl(c2.ibsRecolher), nota: credorIbs ? 'saldo credor' : undefined },
-    { t: 'total', nome: 'CBS a recolher', v: brl(c2.cbsRecolher), nota: credorCbs ? 'saldo credor' : undefined },
+    { t: 'total', nome: 'Crédito de IBS usado (compras)', v: brl(c2.creditoIbs) },
+    { t: 'total', nome: 'Crédito de CBS usado (compras)', v: brl(c2.creditoCbs) },
+    ...(c2.saldoCredor > 0.005
+      ? [{ t: 'total' as const, nome: 'Saldo credor (fora do lucro)', v: brl(c2.saldoCredor), nota: 'crédito acima do débito, fica para compensar' }]
+      : []),
+    { t: 'total', nome: 'IBS a recolher', v: brl(c2.ibsRecolher) },
+    { t: 'total', nome: 'CBS a recolher', v: brl(c2.cbsRecolher) },
     { t: 'total', nome: 'Total de tributos', v: brl(c2.totalTributos) },
     { t: 'total', nome: 'Compras', v: brl(c2.compras) },
     { t: 'total', nome: 'Despesas', v: brl(c2.despesas) },

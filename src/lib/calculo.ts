@@ -38,12 +38,18 @@ export interface Entrada {
   cnpj: string
   ano: Ano
   rbt12: number
+  /** false = RBT12 acompanha o faturamento anual; true = usa o valor digitado. */
+  rbt12Manual: boolean
   anexo: Anexo
   faturamento: number
   pctB2B: number
   estrategiaB2B: Estrategia
   estrategiaB2C: Estrategia
   despesas: number
+  /** Escala as compras na proporção faturamento / faturamentoRefCompras. */
+  comprasAcompanham: boolean
+  /** Faturamento que as compras lançadas representam. */
+  faturamentoRefCompras: number
   cbsRef: number
   ibsRef: number
   pctSimplesDentroPadrao: number
@@ -94,9 +100,12 @@ export interface Cenario2 {
   ibsDebito: Segmentos
   cbsDebito: Segmentos
   preco: Segmentos
+  /** Crédito usado no ano: limitado ao débito de cada tributo. */
   creditoIbs: number
   creditoCbs: number
   creditoTotal: number
+  /** Crédito que passa do débito: fica para compensar depois, não entra no lucro do ano. */
+  saldoCredor: number
   ibsRecolher: number
   cbsRecolher: number
   totalTributos: number
@@ -131,11 +140,19 @@ export interface Comparativo {
 
 export interface Resultado {
   ano: Ano
+  /** RBT12 usado no cálculo (o digitado ou o faturamento). */
+  rbt12: number
   aliquotas: Aliquotas
   simples: Simples
   /** Parcela do DAS que é CBS/IBS (vira crédito ao cliente no "por dentro"). */
   parcelaCbsIbsDas: number
   compras: CompraCalculada[]
+  /** Soma da lista de compras, como lançada. */
+  totalComprasLista: number
+  totalCreditosLista: number
+  /** Fator aplicado às compras para acompanhar o faturamento (1 = sem ajuste). */
+  fatorCompras: number
+  /** Compras e créditos usados na simulação (lista × fator). */
   totalCompras: number
   totalCreditos: number
   c1: Cenario1
@@ -185,7 +202,8 @@ export function calcularCompra(c: Compra, aliq: Aliquotas, pctSimplesDentro: num
 
 export function calcular(e: Entrada, ano: Ano = e.ano): Resultado {
   const aliq = aliquotasDoAno(e, ano)
-  const s = calcularSimples(e.rbt12, e.anexo)
+  const rbt12 = e.rbt12Manual ? e.rbt12 : e.faturamento
+  const s = calcularSimples(rbt12, e.anexo)
   const p = s.partilha
   const t = aliq.total
 
@@ -193,8 +211,11 @@ export function calcular(e: Entrada, ano: Ano = e.ano): Resultado {
   const aliqDasFora = s.efetiva * (1 - parcelaCbsIbsDas)
 
   const compras = e.compras.map((c) => calcularCompra(c, aliq, e.pctSimplesDentroPadrao))
-  const totalCompras = compras.reduce((a, c) => a + (c.valor || 0), 0)
-  const totalCreditos = compras.reduce((a, c) => a + c.credito, 0)
+  const totalComprasLista = compras.reduce((a, c) => a + (c.valor || 0), 0)
+  const totalCreditosLista = compras.reduce((a, c) => a + c.credito, 0)
+  const fatorCompras = e.comprasAcompanham && e.faturamentoRefCompras > 0 ? e.faturamento / e.faturamentoRefCompras : 1
+  const totalCompras = totalComprasLista * fatorCompras
+  const totalCreditos = totalCreditosLista * fatorCompras
 
   const fatB2B = e.faturamento * e.pctB2B
   const fatB2C = e.faturamento - fatB2B
@@ -236,8 +257,11 @@ export function calcular(e: Entrada, ano: Ano = e.ano): Resultado {
   const ibsDeb = seg(r2.b2b * aliq.ibs, r2.b2c * aliq.ibs)
   const cbsDeb = seg(r2.b2b * aliq.cbs, r2.b2c * aliq.cbs)
   const preco2 = seg(r2.b2b + ibsDeb.b2b + cbsDeb.b2b, r2.b2c + ibsDeb.b2c + cbsDeb.b2c)
-  const creditoIbs = t > 0 ? (totalCreditos * aliq.ibs) / t : 0
-  const creditoCbs = t > 0 ? (totalCreditos * aliq.cbs) / t : 0
+  // IBS e CBS são tributos separados: o crédito de um não abate o débito do outro.
+  // O que passa do débito vira saldo credor para compensar depois, não dinheiro no ano.
+  const creditoIbs = Math.min(t > 0 ? (totalCreditos * aliq.ibs) / t : 0, ibsDeb.total)
+  const creditoCbs = Math.min(t > 0 ? (totalCreditos * aliq.cbs) / t : 0, cbsDeb.total)
+  const saldoCredor = totalCreditos - creditoIbs - creditoCbs
   const ibsRecolher = ibsDeb.total - creditoIbs
   const cbsRecolher = cbsDeb.total - creditoCbs
   const totalTributos = das2.total + ibsRecolher + cbsRecolher
@@ -253,7 +277,8 @@ export function calcular(e: Entrada, ano: Ano = e.ano): Resultado {
     preco: preco2,
     creditoIbs,
     creditoCbs,
-    creditoTotal: totalCreditos,
+    creditoTotal: creditoIbs + creditoCbs,
+    saldoCredor,
     ibsRecolher,
     cbsRecolher,
     totalTributos,
@@ -290,7 +315,10 @@ export function calcular(e: Entrada, ano: Ano = e.ano): Resultado {
     vantagemB2C: ladoMaior(-c1.preco.b2c, -c2.preco.b2c),
   }
 
-  return { ano, aliquotas: aliq, simples: s, parcelaCbsIbsDas, compras, totalCompras, totalCreditos, c1, c2, comp }
+  return {
+    ano, rbt12, aliquotas: aliq, simples: s, parcelaCbsIbsDas, compras,
+    totalComprasLista, totalCreditosLista, fatorCompras, totalCompras, totalCreditos, c1, c2, comp,
+  }
 }
 
 /** Mesma simulação para cada ano da transição. */
@@ -312,12 +340,15 @@ export function entradaExemplo(): Entrada {
     cnpj: '',
     ano: 2027,
     rbt12: 1_200_000,
+    rbt12Manual: false,
     anexo: 'I',
     faturamento: 1_200_000,
     pctB2B: 0.7,
     estrategiaB2B: 'repassar',
     estrategiaB2C: 'absorver',
     despesas: 90_000,
+    comprasAcompanham: true,
+    faturamentoRefCompras: 1_200_000,
     cbsRef: 0.088,
     ibsRef: 0.177,
     pctSimplesDentroPadrao: 0.013,

@@ -1,7 +1,7 @@
 import { mascaraCnpj, brl, pct } from '../format'
 import { ANEXOS, ANOS, LIMITE_SIMPLES, SUBLIMITE, type Anexo, type Ano } from '../lib/tabelas'
 import type { Entrada, Resultado } from '../lib/calculo'
-import { Alerta, Caixa, CampoMoeda, CampoSelect, CampoTexto } from './Campos'
+import { Alerta, Caixa, CampoMoeda, CampoSelect, CampoTexto, Interruptor } from './Campos'
 
 interface Props {
   entrada: Entrada
@@ -32,10 +32,17 @@ export function AbaEmpresa({ entrada, r, atualizar }: Props) {
           onChange={(v) => atualizar({ cnpj: mascaraCnpj(v) })} />
         <CampoSelect<Ano> rotulo="Ano de referência" valor={entrada.ano} onChange={(ano) => atualizar({ ano })}
           opcoes={ANOS.map((a) => ({ valor: a, nome: String(a) }))} />
-        <CampoMoeda rotulo="Receita dos últimos 12 meses (RBT12)" valor={entrada.rbt12} onChange={(rbt12) => atualizar({ rbt12 })} />
+        <CampoMoeda rotulo="Receita dos últimos 12 meses (RBT12)" valor={r.rbt12} disabled={!entrada.rbt12Manual}
+          onChange={(rbt12) => atualizar({ rbt12 })} />
         <CampoSelect<Anexo> rotulo="Anexo" valor={entrada.anexo} onChange={(anexo) => atualizar({ anexo })}
           opcoes={ANEXOS.map((a) => ({ valor: a.id, nome: a.nome }))} />
       </div>
+
+      <Interruptor rotulo="RBT12 igual ao faturamento anual" ligado={!entrada.rbt12Manual}
+        onChange={(v) => atualizar(v ? { rbt12Manual: false } : { rbt12Manual: true, rbt12: entrada.faturamento })}
+        ajuda={entrada.rbt12Manual
+          ? 'Desligado: a faixa do Simples usa o RBT12 digitado, mesmo que o faturamento mude.'
+          : 'Ligado: ao mudar o faturamento na aba Vendas, a faixa e a alíquota do Simples acompanham.'} />
 
       <div className="grade c4 espaco">
         <Caixa rotulo="Faixa">{s.faixa === null ? 'Acima do limite' : `${s.faixa}ª faixa`}</Caixa>

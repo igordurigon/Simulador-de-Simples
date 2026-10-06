@@ -1,10 +1,11 @@
 import { useId } from 'react'
 import { brl } from '../format'
-import type { Entrada, Estrategia } from '../lib/calculo'
-import { Caixa, CampoMoeda, CampoPercentual } from './Campos'
+import type { Entrada, Estrategia, Resultado } from '../lib/calculo'
+import { Alerta, Caixa, CampoMoeda, CampoPercentual, Interruptor } from './Campos'
 
 interface Props {
   entrada: Entrada
+  r: Resultado
   atualizar: (p: Partial<Entrada>) => void
 }
 
@@ -35,7 +36,7 @@ function Segmentado({ rotulo, valor, onChange }: { rotulo: string; valor: Estrat
   )
 }
 
-export function AbaVendas({ entrada, atualizar }: Props) {
+export function AbaVendas({ entrada, r, atualizar }: Props) {
   const idSlider = useId()
   const b2b = entrada.faturamento * entrada.pctB2B
   const b2c = entrada.faturamento - b2b
@@ -47,6 +48,21 @@ export function AbaVendas({ entrada, atualizar }: Props) {
         <CampoMoeda rotulo="Despesas sem crédito (folha, pró-labore, encargos)" valor={entrada.despesas}
           onChange={(despesas) => atualizar({ despesas })} />
       </div>
+
+      <Interruptor rotulo="Compras acompanham o faturamento" ligado={entrada.comprasAcompanham}
+        onChange={(v) => atualizar({ comprasAcompanham: v, faturamentoRefCompras: entrada.faturamento })}
+        ajuda={entrada.comprasAcompanham
+          ? <>As compras lançadas valem para um faturamento de {brl(entrada.faturamentoRefCompras)}. Na simulação elas
+            sobem ou descem na mesma proporção: hoje {brl(r.totalComprasLista)} viram <strong>{brl(r.totalCompras)}</strong>.</>
+          : 'Desligado: as compras entram pelo valor lançado, mesmo que o faturamento mude.'} />
+
+      {r.totalCompras > entrada.faturamento && (
+        <Alerta>
+          As compras ({brl(r.totalCompras)}) passam do faturamento ({brl(entrada.faturamento)}). A simulação fica fora da
+          realidade e o crédito das compras pesa demais a favor do cenário por fora.
+          {!entrada.comprasAcompanham && ' Ligue "Compras acompanham o faturamento" ou revise a lista na aba Compras.'}
+        </Alerta>
+      )}
 
       <div className="mix espaco">
         <div className="grade c3">

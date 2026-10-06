@@ -100,7 +100,7 @@ export function AbaCompras({ entrada, r, setEntrada }: Props) {
     const itens = r.compras.filter((c) => c.tipo === t.id)
     return { ...t, valor: itens.reduce((a, c) => a + c.valor, 0), credito: itens.reduce((a, c) => a + c.credito, 0), n: itens.length }
   })
-  const creditoMedio = r.totalCompras > 0 ? r.totalCreditos / r.totalCompras : 0
+  const creditoMedio = r.totalComprasLista > 0 ? r.totalCreditosLista / r.totalComprasLista : 0
 
   return (
     <div className="aba-corpo">
@@ -206,10 +206,10 @@ export function AbaCompras({ entrada, r, setEntrada }: Props) {
             <tfoot>
               <tr>
                 <th scope="row" colSpan={4}>Total</th>
-                <td className="d num">{brl(r.totalCompras)}</td>
+                <td className="d num">{brl(r.totalComprasLista)}</td>
                 <td />
                 <td className="d num">{pct(creditoMedio)}</td>
-                <td className="d num">{brl(r.totalCreditos)}</td>
+                <td className="d num">{brl(r.totalCreditosLista)}</td>
                 <td />
               </tr>
             </tfoot>
@@ -232,6 +232,12 @@ export function AbaCompras({ entrada, r, setEntrada }: Props) {
           </table>
         </div>
         <p className="apoio">Crédito médio sobre as compras: <strong>{pct(creditoMedio)}</strong></p>
+        {Math.abs(r.fatorCompras - 1) > 0.0005 && (
+          <p className="apoio">
+            Na simulação, as compras acompanham o faturamento: {brl(r.totalComprasLista)} viram{' '}
+            <strong>{brl(r.totalCompras)}</strong> e o crédito vira <strong>{brl(r.totalCreditos)}</strong>.
+          </p>
+        )}
       </section>
     </div>
   )
@@ -258,7 +264,7 @@ export function ListaComprasImpressao({ r }: { r: Resultado }) {
           ))}
         </tbody>
         <tfoot>
-          <tr><th scope="row" colSpan={4}>Total</th><td className="d num">{brl(r.totalCompras)}</td><td /><td className="d num">{brl(r.totalCreditos)}</td></tr>
+          <tr><th scope="row" colSpan={4}>Total</th><td className="d num">{brl(r.totalComprasLista)}</td><td /><td className="d num">{brl(r.totalCreditosLista)}</td></tr>
         </tfoot>
       </table>
     </section>
